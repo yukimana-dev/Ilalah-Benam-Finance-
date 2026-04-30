@@ -84,6 +84,56 @@
     <footer class="py-10 text-center text-slate-400 text-sm border-t mt-20">
         <p>&copy; 2026 Ilalah Benam Finance. Built on ARC Testnet.</p>
     </footer>
+<!-- Library Ethers.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 
+<script>
+    const connectBtn = document.querySelector('button'); // Mengambil tombol di navbar
+    let provider;
+    let signer;
+
+    async function connectWallet() {
+        if (window.ethereum) {
+            try {
+                // 1. Inisialisasi Provider
+                provider = new ethers.BrowserProvider(window.ethereum);
+                
+                // 2. Minta user untuk konek akun
+                const accounts = await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                
+                const address = await signer.getAddress();
+                
+                // 3. Ubah tampilan tombol
+                connectBtn.innerText = address.substring(0, 6) + "..." + address.substring(38);
+                connectBtn.classList.remove('accent-gradient');
+                connectBtn.classList.add('bg-green-500');
+                
+                console.log("Connected to:", address);
+                
+                // Opsional: Cek apakah di ARC Testnet
+                checkNetwork();
+                
+            } catch (error) {
+                console.error("User menolak koneksi", error);
+            }
+        } else {
+            alert("Dompet kripto tidak terdeteksi! Silakan instal Rabby atau MetaMask.");
+        }
+    }
+
+    async function checkNetwork() {
+        const network = await provider.getNetwork();
+        // ID Jaringan ARC Testnet (contoh, ganti sesuai dokumentasi ARC terbaru)
+        const arcChainId = 12345n; 
+        
+        if (network.chainId !== arcChainId) {
+            alert("Harap pindah ke jaringan ARC Testnet di wallet Anda!");
+        }
+    }
+
+    // Pasang fungsi ke tombol
+    connectBtn.addEventListener('click', connectWallet);
+</script>
 </body>
 </html>
